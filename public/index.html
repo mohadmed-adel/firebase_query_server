@@ -748,13 +748,30 @@
       }
 
       function displayResults(results) {
-        currentResults = results;
+        // Handle different response formats
+        let logs;
+        if (results.logs && Array.isArray(results.logs)) {
+          // Response from getAllLogs (has logs, lastDoc, hasMore)
+          logs = results.logs;
+        } else if (Array.isArray(results)) {
+          // Direct array response from other endpoints
+          logs = results;
+        } else {
+          console.error("Unexpected results format:", results);
+          showError(
+            "results-container",
+            new Error("Unexpected response format")
+          );
+          return;
+        }
+
+        currentResults = logs;
         const container = document.getElementById("results-container");
         const countElement = document.getElementById("results-count");
 
-        countElement.textContent = `${results.length} results`;
+        countElement.textContent = `${logs.length} results`;
 
-        if (results.length === 0) {
+        if (logs.length === 0) {
           container.innerHTML = '<div class="loading">No results found</div>';
           return;
         }
@@ -772,7 +789,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        ${results
+                        ${logs
                           .map(
                             (log) => `
                             <tr>
