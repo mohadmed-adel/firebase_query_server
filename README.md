@@ -9,7 +9,9 @@ A Node.js server application to query and analyze Firebase geofence logs from yo
 - 🔍 **Advanced Search**: Filter logs by date range, event type, user, platform
 - ⚡ **Quick Queries**: Pre-built queries for common use cases
 - 📤 **Export Data**: Export results to JSON format
+- 🗑️ **Data Management**: Clear all Firebase data with safety confirmations
 - 🚀 **REST API**: Full REST API for programmatic access
+- 🌐 **Firebase Hosting**: Deploy to Firebase Hosting and Functions
 
 ## Setup Instructions
 
@@ -146,6 +148,19 @@ GET /api/platforms
 GET /api/users
 ```
 
+#### Clear All Data
+
+```bash
+POST /api/clear-data
+Content-Type: application/json
+
+{
+  "confirm": true
+}
+```
+
+⚠️ **Warning**: This will permanently delete ALL geofence log data. Use with extreme caution!
+
 ## Event Types
 
 Based on your geofence service, these are the main event types:
@@ -220,7 +235,41 @@ NODE_ENV=development npm start
 
 ## Deployment
 
-### Heroku
+### Firebase Hosting (Recommended)
+
+Deploy to Firebase Hosting and Functions for a fully managed solution:
+
+```bash
+# Quick deployment
+npm run deploy
+
+# Or manual deployment
+firebase deploy
+```
+
+**Benefits:**
+
+- ✅ Free hosting with generous limits
+- ✅ Global CDN for fast loading
+- ✅ Automatic HTTPS
+- ✅ Serverless functions for API
+- ✅ Built-in monitoring and logging
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed instructions.
+
+### Local Development
+
+```bash
+# Run locally
+npm run dev
+
+# Test with Firebase emulators
+npm run emulator
+```
+
+### Other Deployment Options
+
+#### Heroku
 
 ```bash
 heroku create your-app-name
@@ -230,7 +279,7 @@ heroku config:set FIREBASE_PRIVATE_KEY="your-private-key"
 git push heroku main
 ```
 
-### Docker
+#### Docker
 
 ```dockerfile
 FROM node:18-alpine
@@ -253,4 +302,5 @@ CMD ["npm", "start"]
 ## License
 
 MIT License - feel free to use this for your projects!
+
 # firebase_query_server
