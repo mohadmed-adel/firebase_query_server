@@ -101,6 +101,7 @@ class GeofenceQueryService {
   // Get logs by platform
   async getLogsByPlatform(platform: string, limit = 100) {
     try {
+      console.log(`🔍 getLogsByPlatform called with platform: "${platform}"`);
       const snapshot = await db.collection('geofence_essential_logs')
         .where('platform', '==', platform)
         .orderBy('timestamp', 'desc')
@@ -116,6 +117,11 @@ class GeofenceQueryService {
           timestamp: data.timestamp.toDate().toISOString()
         });
       });
+
+      console.log(`📊 getLogsByPlatform found ${logs.length} logs for platform "${platform}"`);
+      if (logs.length > 0) {
+        console.log(`📊 Sample platforms in results:`, logs.slice(0, 3).map(log => `"${log.platform}"`));
+      }
 
       return logs;
     } catch (error) {
@@ -279,7 +285,15 @@ class GeofenceQueryService {
       }
       
       if (filters.platform) {
-        filteredLogs = filteredLogs.filter(log => log.platform === filters.platform);
+        console.log(`🔍 Platform filter requested: "${filters.platform}"`);
+        console.log(`🔍 Sample platform values in data:`, logs.slice(0, 5).map(log => `"${log.platform}"`));
+        filteredLogs = filteredLogs.filter(log => {
+          const matches = log.platform === filters.platform;
+          if (!matches && log.platform && filters.platform) {
+            console.log(`🔍 Platform mismatch: "${log.platform}" !== "${filters.platform}"`);
+          }
+          return matches;
+        });
         console.log(`📊 After platform filter (${filters.platform}): ${filteredLogs.length} logs`);
       }
 

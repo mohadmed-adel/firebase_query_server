@@ -104,6 +104,7 @@ class GeofenceQueryService {
   // Get logs by platform
   async getLogsByPlatform(platform, limit = 100) {
     try {
+      console.log(`🔍 getLogsByPlatform called with platform: "${platform}"`);
       // Use the same approach to avoid index issues
       // Get all logs ordered by timestamp and filter in memory
       const snapshot = await this.db.collection('geofence_essential_logs')
@@ -123,6 +124,11 @@ class GeofenceQueryService {
 
       // Filter by platform in memory
       const filteredLogs = logs.filter(log => log.platform === platform);
+      
+      console.log(`📊 getLogsByPlatform found ${filteredLogs.length} logs for platform "${platform}"`);
+      if (filteredLogs.length > 0) {
+        console.log(`📊 Sample platforms in results:`, filteredLogs.slice(0, 3).map(log => `"${log.platform}"`));
+      }
       
       // Apply limit after filtering
       return filteredLogs.slice(0, limit);
@@ -282,7 +288,15 @@ class GeofenceQueryService {
       }
       
       if (filters.platform) {
-        filteredLogs = filteredLogs.filter(log => log.platform === filters.platform);
+        console.log(`🔍 Platform filter requested: "${filters.platform}"`);
+        console.log(`🔍 Sample platform values in data:`, logs.slice(0, 5).map(log => `"${log.platform}"`));
+        filteredLogs = filteredLogs.filter(log => {
+          const matches = log.platform === filters.platform;
+          if (!matches && log.platform && filters.platform) {
+            console.log(`🔍 Platform mismatch: "${log.platform}" !== "${filters.platform}"`);
+          }
+          return matches;
+        });
         console.log(`📊 After platform filter (${filters.platform}): ${filteredLogs.length} logs`);
       }
 
